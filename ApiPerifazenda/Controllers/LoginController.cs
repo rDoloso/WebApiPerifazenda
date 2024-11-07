@@ -1,7 +1,10 @@
-﻿using ApiPerifazenda.Data;
+﻿using ApiPerifazenda.Model;
+using ApiPerifazenda.Service;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using WebApiPerifazenda.Model;
+using static ApiPerifazenda.Service.ServiceGeral;
 
 namespace ApiPerifazenda.Controllers
 {
@@ -9,69 +12,133 @@ namespace ApiPerifazenda.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly ILoginInterface _loginService;
 
-        public LoginController(AppDbContext context)
+        public LoginController(ILoginInterface loginService)
         {
-            _context = context;
+            _loginService = loginService;
         }
+
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Login>>> GetLogins()
+        public async Task<IActionResult> GetAllLogin()
         {
-            return await _context.Logins.ToListAsync();
+            var logins = await _loginService.GetAllLogins();
+            return Ok(logins);
         }
 
+        
         [HttpGet("{id}")]
-        public async Task<ActionResult<Login>> GetLogin(int id)
+        public async Task<IActionResult> GetLoginById(int id)
         {
-            var login = await _context.Logins.FindAsync(id);
-
+            var login = await _loginService.GetLoginById(id);
             if (login == null)
             {
                 return NotFound();
             }
-
-            return login;
+            return Ok(login);
         }
+
 
         [HttpPost]
-        public async Task<ActionResult<Login>> PostLogin(Login login)
+        public async Task<IActionResult> CreateLogin([FromBody] Login login)
         {
-            _context.Logins.Add(login);
-            await _context.SaveChangesAsync();
+            if (login == null)
+            {
+                return BadRequest("Login data is required.");
+            }
 
-            return CreatedAtAction("GetLogin", new { id = login.IdLogin }, login);
+            var createdLogin = await _loginService.CreateLogin(login);
+            return CreatedAtAction(nameof(GetLoginById), new { id = createdLogin.IdLogin }, createdLogin);
         }
 
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutLogin(int id, Login login)
+        public async Task<IActionResult> UpdateLogin(int id, [FromBody] Login login)
         {
-            if (id != login.IdLogin)
+            if (login == null || id != login.IdLogin)
             {
                 return BadRequest();
             }
 
-            _context.Entry(login).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLogin(int id)
-        {
-            var login = await _context.Logins.FindAsync(id);
-            if (login == null)
+            var result = await _loginService.UpdateLogin(id, login);
+            if (!result)
             {
                 return NotFound();
             }
 
-            _context.Logins.Remove(login);
-            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteLogin(int id)
+        {
+            var result = await _loginService.DeleteLogin(id);
+            if (!result)
+            {
+                return NotFound();
+            }
 
             return NoContent();
         }
-    }
 
+
+        [HttpPost("verificar")]
+        public async Task<IActionResult> VerificarLogin([FromBody] LoginRequest loginRequest)
+        {
+            if (loginRequest == null || string.IsNullOrEmpty(loginRequest.Username) || string.IsNullOrEmpty(loginRequest.Senha))
+            {
+                return BadRequest("Username and password are required.");
+            }
+
+            var senhaValida = await _loginService.VerificarLogin(loginRequest.Username, loginRequest.Senha);
+            if (senhaValida)
+            {
+                return Ok(new { Message = "Login bem-sucedido." });
+            }
+            else
+            {
+                return Unauthorized(new { Message = "Usuário ou senha inválidos." });
+            }
+        }
+
+       
+
+        [HttpPost("criar")]
+        public async Task<IActionResult> CriarLogin([FromBody] CriarLoginRequest request)
+        {
+            var resultado = await _loginService.CriarLogin(request.Username, request.Email, request.Senha, request.IdFuncionario, request.IdCliente);
+
+            if (resultado == ResultadoCriarLogin.Sucesso)
+            {
+                return Ok(new { message = "Login criado com sucesso!" });
+            }
+            else if (resultado == ResultadoCriarLogin.UsuarioOuEmailJaExistente)
+            {
+                return BadRequest(new { message = "Usuário ou email já existente." });
+            }
+            else
+            {
+                return StatusCode(500, new { message = "Erro ao criar login." });
+            }
+        }
+
+
+        //REQUESTS
+        public class LoginRequest
+        {
+            public string Username { get; set; }
+            public string Senha { get; set; }
+        }
+
+        public class CriarLoginRequest
+        {
+            public string Username { get; set; }
+            public string Email { get; set; }
+            public string Senha { get; set; }
+            public int IdFuncionario { get; set; } = 0;
+            public int IdCliente { get; set; } = 0;
+        }
+    }
 }

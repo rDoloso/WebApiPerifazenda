@@ -17,15 +17,15 @@ namespace ApiPerifazenda.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TipoLogin>>> GetTipoLogins()
+        public async Task<ActionResult<IEnumerable<TipoLogin>>> GetTipoLogin()
         {
-            return await _context.TipoLogins.ToListAsync();
+            return await _context.TipoLogin.ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TipoLogin>> GetTipoLogin(int id)
         {
-            var tipoLogin = await _context.TipoLogins.FindAsync(id);
+            var tipoLogin = await _context.TipoLogin.FindAsync(id);
 
             if (tipoLogin == null)
             {
@@ -38,7 +38,7 @@ namespace ApiPerifazenda.Controllers
         [HttpPost]
         public async Task<ActionResult<TipoLogin>> PostTipoLogin(TipoLogin tipoLogin)
         {
-            _context.TipoLogins.Add(tipoLogin);
+            _context.TipoLogin.Add(tipoLogin);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetTipoLogin", new { id = tipoLogin.IdTipoLogin }, tipoLogin);
@@ -61,13 +61,13 @@ namespace ApiPerifazenda.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTipoLogin(int id)
         {
-            var tipoLogin = await _context.TipoLogins.FindAsync(id);
+            var tipoLogin = await _context.TipoLogin.FindAsync(id);
             if (tipoLogin == null)
             {
                 return NotFound();
             }
 
-            _context.TipoLogins.Remove(tipoLogin);
+            _context.TipoLogin.Remove(tipoLogin);
             await _context.SaveChangesAsync();
 
             return NoContent();

@@ -17,9 +17,9 @@ namespace ApiPerifazenda.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Venda>>> GetVendas()
+        public async Task<ActionResult<IEnumerable<Venda>>> GetVenda()
         {
-            return await _context.Vendas
+            return await _context.Venda
                 .Include(v => v.Cliente)  // Incluindo o cliente
                 .Include(v => v.Funcionario) // Incluindo o funcionário que realizou a venda
                 .ToListAsync();
@@ -28,7 +28,7 @@ namespace ApiPerifazenda.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Venda>> GetVenda(int id)
         {
-            var venda = await _context.Vendas
+            var venda = await _context.Venda
                 .Include(v => v.Cliente)
                 .Include(v => v.Funcionario)
                 .FirstOrDefaultAsync(v => v.IdVenda == id);
@@ -44,7 +44,7 @@ namespace ApiPerifazenda.Controllers
         [HttpPost]
         public async Task<ActionResult<Venda>> PostVenda(Venda venda)
         {
-            _context.Vendas.Add(venda);
+            _context.Venda.Add(venda);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetVenda", new { id = venda.IdVenda }, venda);
@@ -67,13 +67,13 @@ namespace ApiPerifazenda.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVenda(int id)
         {
-            var venda = await _context.Vendas.FindAsync(id);
+            var venda = await _context.Venda.FindAsync(id);
             if (venda == null)
             {
                 return NotFound();
             }
 
-            _context.Vendas.Remove(venda);
+            _context.Venda.Remove(venda);
             await _context.SaveChangesAsync();
 
             return NoContent();

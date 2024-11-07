@@ -17,15 +17,15 @@ namespace ApiPerifazenda.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TipoVenda>>> GetTipoVendas()
+        public async Task<ActionResult<IEnumerable<TipoVenda>>> GetTipoVenda()
         {
-            return await _context.TipoVendas.ToListAsync();
+            return await _context.TipoVenda.ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TipoVenda>> GetTipoVenda(int id)
         {
-            var tipoVenda = await _context.TipoVendas.FindAsync(id);
+            var tipoVenda = await _context.TipoVenda.FindAsync(id);
 
             if (tipoVenda == null)
             {
@@ -38,7 +38,7 @@ namespace ApiPerifazenda.Controllers
         [HttpPost]
         public async Task<ActionResult<TipoVenda>> PostTipoVenda(TipoVenda tipoVenda)
         {
-            _context.TipoVendas.Add(tipoVenda);
+            _context.TipoVenda.Add(tipoVenda);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetTipoVenda", new { id = tipoVenda.IdTipoVenda }, tipoVenda);
@@ -61,13 +61,13 @@ namespace ApiPerifazenda.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTipoVenda(int id)
         {
-            var tipoVenda = await _context.TipoVendas.FindAsync(id);
+            var tipoVenda = await _context.TipoVenda.FindAsync(id);
             if (tipoVenda == null)
             {
                 return NotFound();
             }
 
-            _context.TipoVendas.Remove(tipoVenda);
+            _context.TipoVenda.Remove(tipoVenda);
             await _context.SaveChangesAsync();
 
             return NoContent();

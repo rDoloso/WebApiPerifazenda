@@ -1,4 +1,6 @@
 using ApiPerifazenda.Data;
+using ApiPerifazenda.Service;
+using Azure;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+//Scopo interfaces
+builder.Services.AddScoped<ILoginInterface, LoginService>();
+builder.Services.AddScoped<IClienteInterface, ClienteService>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -22,6 +30,24 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
+
+
+void ConfigureServices(IServiceCollection services)
+{
+    // Adicionando CORS
+    services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAllOrigins", builder =>
+            builder.AllowAnyOrigin()  // Permite qualquer origem
+                   .AllowAnyMethod()  // Permite qualquer método (GET, POST, etc.)
+                   .AllowAnyHeader()); // Permite qualquer cabeçalho
+    });
+
+    services.AddControllers();
+}
+
 
 app.UseHttpsRedirection();
 

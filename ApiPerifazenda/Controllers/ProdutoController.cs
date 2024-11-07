@@ -17,15 +17,15 @@ namespace ApiPerifazenda.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Produto>>> GetProdutos()
+        public async Task<ActionResult<IEnumerable<Produto>>> GetProduto()
         {
-            return await _context.Produtos.ToListAsync();
+            return await _context.Produto.ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Produto>> GetProduto(int id)
         {
-            var produto = await _context.Produtos.FindAsync(id);
+            var produto = await _context.Produto.FindAsync(id);
 
             if (produto == null)
             {
@@ -38,7 +38,7 @@ namespace ApiPerifazenda.Controllers
         [HttpPost]
         public async Task<ActionResult<Produto>> PostProduto(Produto produto)
         {
-            _context.Produtos.Add(produto);
+            _context.Produto.Add(produto);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetProduto", new { id = produto.IdProduto }, produto);
@@ -61,13 +61,13 @@ namespace ApiPerifazenda.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduto(int id)
         {
-            var produto = await _context.Produtos.FindAsync(id);
+            var produto = await _context.Produto.FindAsync(id);
             if (produto == null)
             {
                 return NotFound();
             }
 
-            _context.Produtos.Remove(produto);
+            _context.Produto.Remove(produto);
             await _context.SaveChangesAsync();
 
             return NoContent();

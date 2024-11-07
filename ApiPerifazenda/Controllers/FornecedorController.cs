@@ -17,15 +17,15 @@ namespace ApiPerifazenda.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Fornecedor>>> GetFornecedores()
+        public async Task<ActionResult<IEnumerable<Fornecedor>>> GetFornecedor()
         {
-            return await _context.Fornecedores.ToListAsync();
+            return await _context.Fornecedor.ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Fornecedor>> GetFornecedor(int id)
         {
-            var fornecedor = await _context.Fornecedores.FindAsync(id);
+            var fornecedor = await _context.Fornecedor.FindAsync(id);
 
             if (fornecedor == null)
             {
@@ -38,7 +38,7 @@ namespace ApiPerifazenda.Controllers
         [HttpPost]
         public async Task<ActionResult<Fornecedor>> PostFornecedor(Fornecedor fornecedor)
         {
-            _context.Fornecedores.Add(fornecedor);
+            _context.Fornecedor.Add(fornecedor);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetFornecedor", new { id = fornecedor.IdFornecedor }, fornecedor);
@@ -61,13 +61,13 @@ namespace ApiPerifazenda.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFornecedor(int id)
         {
-            var fornecedor = await _context.Fornecedores.FindAsync(id);
+            var fornecedor = await _context.Fornecedor.FindAsync(id);
             if (fornecedor == null)
             {
                 return NotFound();
             }
 
-            _context.Fornecedores.Remove(fornecedor);
+            _context.Fornecedor.Remove(fornecedor);
             await _context.SaveChangesAsync();
 
             return NoContent();

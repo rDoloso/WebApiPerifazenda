@@ -19,13 +19,13 @@ namespace ApiPerifazenda.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Estoque>>> GetEstoques()
         {
-            return await _context.Estoques.Include(e => e.Produto).ToListAsync();
+            return await _context.Estoque.Include(e => e.Produto).ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Estoque>> GetEstoque(int id)
         {
-            var estoque = await _context.Estoques.Include(e => e.Produto).FirstOrDefaultAsync(e => e.IdEstoque == id);
+            var estoque = await _context.Estoque.Include(e => e.Produto).FirstOrDefaultAsync(e => e.IdEstoque == id);
 
             if (estoque == null)
             {
@@ -38,7 +38,7 @@ namespace ApiPerifazenda.Controllers
         [HttpPost]
         public async Task<ActionResult<Estoque>> PostEstoque(Estoque estoque)
         {
-            _context.Estoques.Add(estoque);
+            _context.Estoque.Add(estoque);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetEstoque", new { id = estoque.IdEstoque }, estoque);
@@ -61,13 +61,13 @@ namespace ApiPerifazenda.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEstoque(int id)
         {
-            var estoque = await _context.Estoques.FindAsync(id);
+            var estoque = await _context.Estoque.FindAsync(id);
             if (estoque == null)
             {
                 return NotFound();
             }
 
-            _context.Estoques.Remove(estoque);
+            _context.Estoque.Remove(estoque);
             await _context.SaveChangesAsync();
 
             return NoContent();

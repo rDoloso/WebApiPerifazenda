@@ -17,15 +17,15 @@ namespace ApiPerifazenda.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Funcionario>>> GetFuncionarios()
+        public async Task<ActionResult<IEnumerable<Funcionario>>> GetFuncionario()
         {
-            return await _context.Funcionarios.ToListAsync();
+            return await _context.Funcionario.ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Funcionario>> GetFuncionario(int id)
         {
-            var funcionario = await _context.Funcionarios.FindAsync(id);
+            var funcionario = await _context.Funcionario.FindAsync(id);
 
             if (funcionario == null)
             {
@@ -38,7 +38,7 @@ namespace ApiPerifazenda.Controllers
         [HttpPost]
         public async Task<ActionResult<Funcionario>> PostFuncionario(Funcionario funcionario)
         {
-            _context.Funcionarios.Add(funcionario);
+            _context.Funcionario.Add(funcionario);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetFuncionario", new { id = funcionario.IdFuncionario }, funcionario);
@@ -61,13 +61,13 @@ namespace ApiPerifazenda.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFuncionario(int id)
         {
-            var funcionario = await _context.Funcionarios.FindAsync(id);
+            var funcionario = await _context.Funcionario.FindAsync(id);
             if (funcionario == null)
             {
                 return NotFound();
             }
 
-            _context.Funcionarios.Remove(funcionario);
+            _context.Funcionario.Remove(funcionario);
             await _context.SaveChangesAsync();
 
             return NoContent();

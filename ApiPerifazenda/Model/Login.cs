@@ -1,7 +1,10 @@
-﻿namespace WebApiPerifazenda.Model
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WebApiPerifazenda.Model
 {
     public class Login
     {
+        [Key] // Define a chave primária
         public int IdLogin { get; set; }
         public string Email { get; set; }
         public string Username { get; set; }
@@ -12,7 +15,9 @@
         public int? FkCliente { get; set; }
         public int? FkFuncionario { get; set; }
 
-        public Cliente Cliente { get; set; }
-        public Funcionario Funcionario { get; set; }
+        public Cliente? Cliente { get; set; }
+        public Funcionario? Funcionario { get; set; }
+
+        
     }
 }

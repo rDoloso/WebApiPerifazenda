@@ -1,7 +1,8 @@
-﻿using ApiPerifazenda.Data;
+﻿using ApiPerifazenda.Service;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebApiPerifazenda.Model;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ApiPerifazenda.Controllers
 {
@@ -9,69 +10,82 @@ namespace ApiPerifazenda.Controllers
     [ApiController]
     public class ClienteController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IClienteInterface _clienteService;
 
-        public ClienteController(AppDbContext context)
+        // Injeção de dependência para o serviço de clientes
+        public ClienteController(IClienteInterface clienteService)
         {
-            _context = context;
+            _clienteService = clienteService;
         }
 
+        // GET: api/cliente
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
         {
-            return await _context.Clientes.ToListAsync();
+            var clientes = await _clienteService.GetClientesAsync();
+            return Ok(clientes);
         }
 
+        // GET: api/cliente/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Cliente>> GetCliente(int id)
         {
-            var cliente = await _context.Clientes.FindAsync(id);
+            var cliente = await _clienteService.GetClienteByIdAsync(id);
 
             if (cliente == null)
             {
                 return NotFound();
             }
 
-            return cliente;
+            return Ok(cliente);
         }
 
+        // POST: api/cliente
         [HttpPost]
-        public async Task<ActionResult<Cliente>> PostCliente(Cliente cliente)
+        public async Task<ActionResult<Cliente>> CreateCliente(Cliente cliente)
         {
-            _context.Clientes.Add(cliente);
-            await _context.SaveChangesAsync();
+            if (cliente == null)
+            {
+                return BadRequest("Cliente não pode ser nulo.");
+            }
 
-            return CreatedAtAction("GetCliente", new { id = cliente.IdCliente }, cliente);
+            var novoCliente = await _clienteService.CreateClienteAsync(cliente);
+
+            // Retorna o status 201 com o cliente recém-criado e o URI para acessar o novo recurso
+            return CreatedAtAction(nameof(GetCliente), new { id = novoCliente.IdCliente }, novoCliente);
         }
 
+        // PUT: api/cliente/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCliente(int id, Cliente cliente)
+        public async Task<ActionResult> UpdateCliente(int id, Cliente cliente)
         {
             if (id != cliente.IdCliente)
             {
-                return BadRequest();
+                return BadRequest("O ID do cliente não corresponde.");
             }
 
-            _context.Entry(cliente).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            var resultado = await _clienteService.UpdateClienteAsync(id, cliente);
 
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCliente(int id)
-        {
-            var cliente = await _context.Clientes.FindAsync(id);
-            if (cliente == null)
+            if (!resultado)
             {
                 return NotFound();
             }
 
-            _context.Clientes.Remove(cliente);
-            await _context.SaveChangesAsync();
+            return NoContent();  // Status 204 - Não há conteúdo, mas a atualização foi bem-sucedida
+        }
 
-            return NoContent();
+        // DELETE: api/cliente/{id}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteCliente(int id)
+        {
+            var resultado = await _clienteService.DeleteClienteAsync(id);
+
+            if (!resultado)
+            {
+                return NotFound();
+            }
+
+            return NoContent();  // Status 204 - Cliente excluído com sucesso
         }
     }
-
 }
