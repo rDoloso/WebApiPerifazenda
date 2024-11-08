@@ -20,6 +20,7 @@ builder.Services.AddSwaggerGen();
 //Scopo interfaces
 builder.Services.AddScoped<ILoginInterface, LoginService>();
 builder.Services.AddScoped<IClienteInterface, ClienteService>();
+builder.Services.AddScoped<IVendaInterface, VendaService>();
 
 
 var app = builder.Build();

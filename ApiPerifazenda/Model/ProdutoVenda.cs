@@ -11,6 +11,6 @@ namespace WebApiPerifazenda.Model
         public int Quantidade { get; set; }
 
         // Propriedade de navegação para a entidade Produto
-        public Produto Produto { get; set; }
+        public Produto? Produto { get; set; }
     }
 }
