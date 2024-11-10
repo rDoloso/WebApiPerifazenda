@@ -1,6 +1,5 @@
 using ApiPerifazenda.Data;
 using ApiPerifazenda.Service;
-using Azure;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,49 +8,40 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add services to the container.
-
+// Adiciona serviços ao contêiner de DI
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Configuração do Swagger para API
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Adiciona a configuração CORS para permitir todas as origens (ou personalize a origem)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", builder =>
+    {
+        builder.AllowAnyOrigin()  // Permite qualquer origem
+               .AllowAnyMethod()  // Permite qualquer método HTTP
+               .AllowAnyHeader(); // Permite qualquer cabeçalho
+    });
+});
 
-//Scopo interfaces
+// Registra os serviços de aplicação (Login, Cliente, Venda)
 builder.Services.AddScoped<ILoginInterface, LoginService>();
 builder.Services.AddScoped<IClienteInterface, ClienteService>();
 builder.Services.AddScoped<IVendaInterface, VendaService>();
 
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configuração do pipeline de requisições HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-
-
-
-void ConfigureServices(IServiceCollection services)
-{
-    // Adicionando CORS
-    services.AddCors(options =>
-    {
-        options.AddPolicy("AllowAllOrigins", builder =>
-            builder.AllowAnyOrigin()  // Permite qualquer origem
-                   .AllowAnyMethod()  // Permite qualquer método (GET, POST, etc.)
-                   .AllowAnyHeader()); // Permite qualquer cabeçalho
-    });
-
-    services.AddControllers();
-}
-
-
 app.UseHttpsRedirection();
-
+app.UseCors("AllowAllOrigins"); // Aplica a política de CORS para todas as origens
 app.UseAuthorization();
 
 app.MapControllers();
