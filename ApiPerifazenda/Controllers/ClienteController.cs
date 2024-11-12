@@ -87,5 +87,40 @@ namespace ApiPerifazenda.Controllers
 
             return NoContent();  // Status 204 - Cliente excluído com sucesso
         }
+
+        [HttpGet("verificar-cpf")]
+        public async Task<IActionResult> VerificarCpf([FromQuery] string cpf)
+        {
+            if (string.IsNullOrEmpty(cpf))
+            {
+                return BadRequest("O campo 'CPF' é obrigatório.");
+            }
+
+            var cpfExistente = await _clienteService.VerificarClientePorCpf(cpf);
+            if (cpfExistente)
+            {
+                return Conflict(new { message = "CPF já cadastrado." }); // 409 Conflict
+            }
+
+            return Ok(new { message = "CPF disponível." });
+        }
+
+        [HttpGet("verificar-cnpj")]
+        public async Task<IActionResult> VerificarCnpj([FromQuery] string cnpj)
+        {
+            if (string.IsNullOrEmpty(cnpj))
+            {
+                return BadRequest("O campo 'CNPJ' é obrigatório.");
+            }
+
+            var cnpjExistente = await _clienteService.VerificarClientePorCnpj(cnpj);
+            if (cnpjExistente)
+            {
+                return Conflict(new { message = "CNPJ já cadastrado." }); // 409 Conflict
+            }
+
+            return Ok(new { message = "CNPJ disponível." });
+        }
+
     }
 }

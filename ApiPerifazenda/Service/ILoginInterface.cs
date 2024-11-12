@@ -7,6 +7,7 @@ namespace ApiPerifazenda.Service
 {
     public interface ILoginInterface
     {
+        Task<bool> VerificarUsernameExistente(string username);
         Task<IEnumerable<Login>> GetAllLogins();
         Task<Login> GetLoginById(int id);
         Task<Login> CreateLogin(Login login);

@@ -55,6 +55,11 @@ namespace ApiPerifazenda.Service
             }
         }
 
+        public async Task<bool> VerificarUsernameExistente(string username)
+        {
+            return await _context.Login.AnyAsync(u => u.Username == username);
+
+        }
         public async Task<IEnumerable<Login>> GetAllLogins()
         {
             return await _context.Login.ToListAsync();

@@ -124,6 +124,23 @@ namespace ApiPerifazenda.Controllers
             }
         }
 
+        [HttpGet("verificar-usuario")]
+        public async Task<IActionResult> VerificarUsername([FromQuery] string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                return BadRequest("Username é necessário.");
+            }
+
+            var loginExistente = await _loginService.VerificarUsernameExistente(username);
+            if (loginExistente != false)
+            {
+                return Conflict(new { message = "Username já existe." });  // 409 Conflict
+            }
+
+            return Ok(); // Username não existe
+        }
+
 
         //REQUESTS
         public class LoginRequest
@@ -137,6 +154,7 @@ namespace ApiPerifazenda.Controllers
             public string Username { get; set; }
             public string Email { get; set; }
             public string Senha { get; set; }
+            public int TipoLogin { get; set; } = 1;
             public int IdFuncionario { get; set; } = 0;
             public int IdCliente { get; set; } = 0;
         }

@@ -56,5 +56,24 @@ namespace ApiPerifazenda.Service
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> VerificarClientePorCpf(string cpf)
+        {
+            //return await _context.Cliente.AnyAsync(c => c.Cpf == cpf);
+            var cliente = await _context.Cliente
+                                         .FirstOrDefaultAsync(c => c.Cpf == cpf);
+            return cliente != null; // Retorna true se o CNPJ já existir
+
+        }
+
+        // Verificar se o cliente já existe pelo CNPJ
+        public async Task<bool> VerificarClientePorCnpj(string cnpj)
+        {
+            var cliente = await _context.Cliente
+                                         .FirstOrDefaultAsync(c => c.Cnpj == cnpj);
+            return cliente != null; // Retorna true se o CNPJ já existir
+
+            //return await _context.Cliente.AnyAsync(c => c.Cnpj == cnpj);
+        }
     }
 }
