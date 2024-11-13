@@ -92,10 +92,16 @@ namespace ApiPerifazenda.Controllers
                 return BadRequest("Username and password are required.");
             }
 
-            var senhaValida = await _loginService.VerificarLogin(loginRequest.Username, loginRequest.Senha);
-            if (senhaValida)
+            var login = await _loginService.VerificarLogin(loginRequest.Username, loginRequest.Senha);
+
+            if (login != null)
             {
-                return Ok(new { Message = "Login bem-sucedido." });
+                return Ok(new
+                {
+                    Message = "Login bem-sucedido.",
+                    FkCliente = login.FkCliente,
+                    FkFuncionario = login.FkFuncionario
+                });
             }
             else
             {

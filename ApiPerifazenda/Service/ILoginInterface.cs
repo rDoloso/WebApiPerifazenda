@@ -14,7 +14,7 @@ namespace ApiPerifazenda.Service
         Task<bool> UpdateLogin(int id, Login login);
         Task<bool> DeleteLogin(int id);
 
-        Task<bool> VerificarLogin(string username, string senha);
+        Task<Login> VerificarLogin(string username, string senha);
 
         Task<ResultadoCriarLogin> CriarLogin(string usuario, string email, string senha, int idFuncionario = 0, int idCliente = 0);
 

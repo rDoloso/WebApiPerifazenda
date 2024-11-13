@@ -102,15 +102,13 @@ namespace ApiPerifazenda.Service
             return true;
         }
 
-        public async Task<bool> VerificarLogin(string username, string senha)
+        public async Task<Login> VerificarLogin(string username, string senha)
         {
-            bool senhaValida = false;
-
             // 1. Buscar o login do banco de dados com base no nome de usuário.
             var login = await _context.Login.FirstOrDefaultAsync(l => l.Username == username);
             if (login == null)
             {
-                return senhaValida;  // Usuário não encontrado
+                return null;  // Usuário não encontrado
             }
 
             // 2. Obter o salt e o hash da senha armazenados no banco de dados.
@@ -118,9 +116,9 @@ namespace ApiPerifazenda.Service
             string hashSenha = login.SenhaHash;
 
             // 3. Verificar se a senha fornecida corresponde ao hash armazenado.
-            senhaValida = VerificarSenha(senha, saltKey, hashSenha);
+            bool senhaValida = VerificarSenha(senha, saltKey, hashSenha);
 
-            return senhaValida;
+            return senhaValida ? login : null; // Retorna o objeto login ou null
         }
 
         public Task<Login> CreateLogin(Login login)
